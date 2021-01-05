@@ -16,14 +16,19 @@ public class BuildingCommandHandler : MonoBehaviour
 
     public GameObject destroyer;
 
-    public GameObject[] reference;
+    public GameObject[] referenceBuildings;
     public GameObject[] buildingButtons;
+
+    public List<GameObject> buildings;
+
+    public BuildingGeneralSO buildingsGeneralData;
 
     private void Start()
     {
         CreateGrid();
 
         destroyer.SetActive(false);
+
     }
 
     private void Update()
@@ -40,6 +45,26 @@ public class BuildingCommandHandler : MonoBehaviour
             ActivateBuildingButtons();
         }
     }
+
+    private Vector3 GetMouseClickPosition()
+
+    {
+        Vector3 mouse = new Vector3();
+
+        Plane plane = new Plane(Vector3.up, Vector3.zero);
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        float entry;
+        if (plane.Raycast(ray, out entry))
+        {
+            mouse = ray.GetPoint(entry);
+        }
+
+        return mouse;
+    }
+
+    // Building commands //
 
     private void CreateGrid()
     {
@@ -72,90 +97,93 @@ public class BuildingCommandHandler : MonoBehaviour
 
     }
 
-    private Vector3 GetMouseClickPosition()
-
+    private GameObject CreateBuilding()
     {
-        Vector3 mouse = new Vector3();
+        GameObject newBuilding = new GameObject();
 
-        Plane plane = new Plane(Vector3.up, Vector3.zero);
+        newBuilding.AddComponent<MeshFilter>();
+        newBuilding.AddComponent<MeshRenderer>();
+        newBuilding.AddComponent<BuildingProperties>();
 
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        return newBuilding;
+    }
 
-        float entry;
-        if (plane.Raycast(ray, out entry))
-        {
-            mouse = ray.GetPoint(entry);
-        }
+    private void CreateCylinderBuilding()
+    {
+        GameObject copy = CreateBuilding();
 
-        return mouse;
+        copy.name = "new cylinder building";
+        copy.transform.localScale = referenceBuildings[0].transform.localScale;
+        copy.GetComponent<MeshFilter>().mesh = referenceBuildings[0].GetComponent<MeshFilter>().mesh;
+        copy.GetComponent<MeshRenderer>().material = referenceBuildings[0].GetComponent<MeshRenderer>().material;
+        copy.GetComponent<BuildingProperties>().isPlaced = false;
+        copy.transform.position = GetMouseClickPosition();
+        copy.transform.rotation = Quaternion.identity;
+
+        buildings.Add(copy);
+    }
+
+    private void CreateCubeBuilding()
+    {
+        GameObject copy = CreateBuilding();
+
+        copy.name = "new cube building";
+        copy.transform.localScale = referenceBuildings[1].transform.localScale;
+        copy.GetComponent<MeshFilter>().mesh = referenceBuildings[1].GetComponent<MeshFilter>().mesh;
+        copy.GetComponent<MeshRenderer>().material = referenceBuildings[1].GetComponent<MeshRenderer>().material;
+        copy.GetComponent<BuildingProperties>().isPlaced = false;
+        copy.transform.position = GetMouseClickPosition();
+        copy.transform.rotation = Quaternion.identity;
+
+        buildings.Add(copy);
     }
 
     private void HandleBuilding()
     {
-        GameObject[] notPlacedBuilding = GameObject.FindGameObjectsWithTag("notPlaced");
+        GameObject notPlacedBuilding = null;
 
-        if (notPlacedBuilding.GetLength(0) > 0)
+        foreach (GameObject building in buildings)
         {
-            DeactivateBuildingButtons();
-
-            notPlacedBuilding[0].transform.position = new Vector3(GetMouseClickPosition().x, GetMouseClickPosition().y + notPlacedBuilding[0].transform.localScale.y, GetMouseClickPosition().z);
-
-            PlaceBuilding(notPlacedBuilding[0]);
-
+            if (building.GetComponent<BuildingProperties>().isPlaced == false)
+            {
+                notPlacedBuilding = building;
+                break;
+            }
         }
-        else
+        if (notPlacedBuilding == null)
         {
             ActivateBuildingButtons();
         }
-    }
-
-    private void PlaceBuilding(GameObject building)
-    {
-
-        Vector3 nearestCellCenter;
-
-        nearestCellCenter = grid.GetXYZ(building.transform.position);
-        nearestCellCenter = grid.GetWorldPosition((int)nearestCellCenter.x, (int)nearestCellCenter.y, (int)nearestCellCenter.z);
-        nearestCellCenter += new Vector3(cellSize * .5f, 0, cellSize * .5f);
-
-        building.transform.position = new Vector3(nearestCellCenter.x, building.transform.position.y, nearestCellCenter.z);
-
-        if (Input.GetMouseButtonDown(0))
+        else
         {
-            if (grid.IsSlotFree(building.transform.position))
+            DeactivateBuildingButtons();
+
+            notPlacedBuilding.transform.position = new Vector3(GetMouseClickPosition().x, GetMouseClickPosition().y + notPlacedBuilding.transform.localScale.y, GetMouseClickPosition().z);
+
+            Vector3 nearestCellCenter;
+
+            nearestCellCenter = grid.GetXYZ(notPlacedBuilding.transform.position);
+            nearestCellCenter = grid.GetWorldPosition((int)nearestCellCenter.x, (int)nearestCellCenter.y, (int)nearestCellCenter.z);
+            nearestCellCenter += new Vector3(cellSize * .5f, 0, cellSize * .5f);
+
+            notPlacedBuilding.transform.position = new Vector3(nearestCellCenter.x, notPlacedBuilding.transform.position.y, nearestCellCenter.z);
+
+            if (Input.GetMouseButtonDown(0))
             {
-                grid.SetBuilding(building.transform.position, building);
-                building.transform.position = new Vector3(nearestCellCenter.x, building.transform.position.y, nearestCellCenter.z);
-                building.tag = "placed";
+                if (grid.IsSlotFree(notPlacedBuilding.transform.position))
+                {
+                    grid.SetBuilding(notPlacedBuilding.transform.position, notPlacedBuilding);
+                    notPlacedBuilding.transform.position = new Vector3(nearestCellCenter.x, notPlacedBuilding.transform.position.y, nearestCellCenter.z);
+                    notPlacedBuilding.GetComponent<BuildingProperties>().isPlaced = true;
+                }
+            }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                buildings.Remove(notPlacedBuilding);
+                Destroy(notPlacedBuilding);
             }
         }
-        else if (Input.GetMouseButtonDown(1))
-        {
-            Destroy(building);
-        }
 
-    }
-
-    private void ActivateBuildingButtons()
-    {
-        for (int i = 0; i < buildingButtons.GetLength(0); i++)
-        {
-            buildingButtons[i].SetActive(true);
-        }
-    }
-
-    private void DeactivateBuildingButtons()
-    {
-        for (int i = 0; i < buildingButtons.GetLength(0); i++)
-        {
-            buildingButtons[i].SetActive(false);
-        }
-    }
-
-    public void DestroyButtonClick()
-    {
-        destroyer.SetActive(true);
-        destroyer.transform.position = GetMouseClickPosition();
     }
 
     private void Destroyer()
@@ -180,6 +208,10 @@ public class BuildingCommandHandler : MonoBehaviour
             }
             else
             {
+                buildings.Remove(grid.FindObjectInGrid(destroyer.transform.position));
+
+                Destroy(grid.FindObjectInGrid(destroyer.transform.position));
+
                 grid.FreeSlot(destroyer.transform.position);
             }
         }
@@ -189,18 +221,38 @@ public class BuildingCommandHandler : MonoBehaviour
         }
     }
 
+    // Buttons commands //
+
+    public void DestroyButtonClick()
+    {
+        destroyer.SetActive(true);
+        destroyer.transform.position = GetMouseClickPosition();
+    }
+
     public void BuildingButton_Cylinder_Click()
     {
-        GameObject copy = Instantiate(reference[0], GetMouseClickPosition(), Quaternion.identity);
-
-        copy.tag = "notPlaced";
+        CreateCylinderBuilding();
     }
 
     public void BuildingButton_Cube_Click()
     {
-        GameObject copy = Instantiate(reference[1], GetMouseClickPosition(), Quaternion.identity);
+        CreateCubeBuilding();
+    }
 
-        copy.tag = "notPlaced";
+    private void ActivateBuildingButtons()
+    {
+        for (int i = 0; i < buildingButtons.GetLength(0); i++)
+        {
+            buildingButtons[i].SetActive(true);
+        }
+    }
+
+    private void DeactivateBuildingButtons()
+    {
+        for (int i = 0; i < buildingButtons.GetLength(0); i++)
+        {
+            buildingButtons[i].SetActive(false);
+        }
     }
 
 }

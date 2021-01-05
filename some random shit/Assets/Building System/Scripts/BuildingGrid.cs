@@ -83,7 +83,7 @@ public class BuildingGrid
 
     public void FreeSlot(int x, int y, int z)
     {
-        gridArray[x, y, z].SetActive(false);
+        gridArray[x, y, z] = null;
     }
 
     public void FreeSlot(Vector3 position)
@@ -100,6 +100,17 @@ public class BuildingGrid
     public void SetBuilding(Vector3 worldPosition, GameObject building)
     {
         SetBuilding((int)GetXYZ(worldPosition).x, (int)GetXYZ(worldPosition).y, (int)GetXYZ(worldPosition).z, building);
-
     }
+
+    public GameObject FindInGrid(int x, int y, int z)
+    {
+        return gridArray[x, y, z];
+    }
+
+    public GameObject FindObjectInGrid(Vector3 worldPosition)
+    {
+
+        return FindInGrid((int)GetXYZ(worldPosition).x, (int)GetXYZ(worldPosition).y, (int)GetXYZ(worldPosition).z);
+    }
+
 }
