@@ -19,7 +19,7 @@ public class CameraMovement : MonoBehaviour
 
     public Vector3 zoomAmmount;
     Vector3 newPosition;
-    Vector3 newZoom;
+    public Vector3 newZoom;
     Vector3 dragStartPosition;
     Vector3 dragCurrentPosition;
     Vector3 rotateStartPosition;
@@ -82,11 +82,22 @@ public class CameraMovement : MonoBehaviour
 
         if (Input.GetKey(KeyCode.R))
         {
+
             newZoom += zoomAmmount;
+            if (newZoom.y < 80f && newZoom.z > -80f)
+            {
+                newZoom.y = 80f;
+                newZoom.z = -80f;
+            }
         }
         if (Input.GetKey(KeyCode.F))
         {
             newZoom -= zoomAmmount;
+            if (newZoom.y > 500f && newZoom.z < -500f)
+            {
+                newZoom.y = 500f;
+                newZoom.z = -500f;
+            }
         }
 
         transform.position = Vector3.Lerp(transform.position, newPosition, Time.deltaTime * movementTime);
@@ -100,6 +111,16 @@ public class CameraMovement : MonoBehaviour
         if (Input.mouseScrollDelta.y != 0)
         {
             newZoom += Input.mouseScrollDelta.y * zoomAmmount;
+            if (newZoom.y > 500f && newZoom.z < -500f)
+            {
+                newZoom.y = 500f;
+                newZoom.z = -500f;
+            }
+            else if (newZoom.y < 80f && newZoom.z > -80f)
+            {
+                newZoom.y = 80f;
+                newZoom.z = -80f;
+            }
         }
 
         /*
