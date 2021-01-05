@@ -1,28 +1,17 @@
-/*
-source: https://www.youtube.com/watch?v=waEsGu--9P8
-Author: CodeMonkey
-*/
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using CodeMonkey.Utils;
 
 public class BuildingGrid
 {
     private int width;
     private int height;
     private int length;
-    private int[,,] gridArray;
+    public GameObject[,,] gridArray;
 
     private float cellSize;
 
     private Vector3 originPosition;
-
-    public Transform gridTransform;
-
-    private Quaternion rotation;
-
 
     public BuildingGrid(int width, int height, int length, float cellSize, Vector3 originPosition)
     {
@@ -31,62 +20,86 @@ public class BuildingGrid
         this.length = length;
         this.cellSize = cellSize;
         this.originPosition = originPosition;
+        this.gridArray = new GameObject[width, height, length];
 
-        rotation = Quaternion.Euler(90, 0, 0);
-
-        gridArray = new int[width, height, length];
-
-        for (int x = 0; x < gridArray.GetLength(0); x++)
-        {
-            for (int y = 0; y < gridArray.GetLength(1); y++)
-            {
-                for (int z = 0; z < gridArray.GetLength(2); z++)
+        /*
+                for (int x = 0; x < gridArray.GetLength(0); x++)
                 {
-                    Debug.DrawLine(GetWorldPosition(x, y, z), GetWorldPosition(x, y, z + 1), Color.white, 100f);
-                    Debug.DrawLine(GetWorldPosition(x, y, z), GetWorldPosition(x + 1, y, z), Color.white, 100f);
+                    for (int y = 0; y < gridArray.GetLength(1); y++)
+                    {
+                        for (int z = 0; z < gridArray.GetLength(2); z++)
+                        {
+                            Debug.DrawLine(GetWorldPosition(x, y, z), GetWorldPosition(x, y, z + 1), Color.white, 1f, true);
+                            Debug.DrawLine(GetWorldPosition(x, y, z), GetWorldPosition(x + 1, y, z), Color.white, 1f, true);
+                        }
+                    }
                 }
-            }
-        }
-        Debug.DrawLine(GetWorldPosition(0, 0, length), GetWorldPosition(width, 0, length), Color.white, 100f);
-        Debug.DrawLine(GetWorldPosition(width, 0, 0), GetWorldPosition(width, 0, length), Color.white, 100f);
-
+                Debug.DrawLine(GetWorldPosition(0, 0, length), GetWorldPosition(width, 0, length), Color.white, 1f, true);
+                Debug.DrawLine(GetWorldPosition(width, 0, 0), GetWorldPosition(width, 0, length), Color.white, 1f, true);
+        */
     }
 
-    private Vector3 GetWorldPosition(int x, int y, int z)
+    public Vector3 GetWorldPosition(int x, int y, int z)
     {
         return new Vector3(x, y, z) * cellSize + originPosition;
     }
 
-    private Vector3 GetXYZ(Vector3 worldPosition)
+    public Vector3 GetXYZ(Vector3 worldPosition)
     {
+        Vector3 gridPosition = new Vector3();
 
-        worldPosition.x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
-        worldPosition.y = Mathf.FloorToInt((worldPosition + originPosition).y / cellSize);
-        worldPosition.z = Mathf.FloorToInt((worldPosition - originPosition).z / cellSize);
+        gridPosition.x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
+        gridPosition.y = Mathf.FloorToInt((worldPosition + originPosition).y / cellSize);
+        gridPosition.z = Mathf.FloorToInt((worldPosition - originPosition).z / cellSize);
 
-        return worldPosition;
+        return gridPosition;
     }
 
-    public void SetValue(int x, int y, int z, int value)
+    public bool IsSlotFree(Vector3 position)
     {
+        position = GetXYZ(position);
+
+        int x = (int)position.x;
+        int y = (int)position.y;
+        int z = (int)position.z;
+
         if (x >= 0 && y >= 0 && z >= 0 && x < width && y < height && z < length)
         {
-            gridArray[x, y, z] += value;
-            // Debug.Log("gridArray[" + x + "," + y + "," + z + "] = " + gridArray[x, y, z]);
+            if (gridArray[x, y, z] != null)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
+        else
+        {
+            return false;
+        }
+
     }
 
-    public void SetValue(Vector3 worldPosition, int value)
+    public void FreeSlot(int x, int y, int z)
     {
-        worldPosition = GetXYZ(worldPosition);
+        gridArray[x, y, z].SetActive(false);
+    }
 
-        int x, y, z;
+    public void FreeSlot(Vector3 position)
+    {
+        FreeSlot((int)GetXYZ(position).x, (int)GetXYZ(position).y, (int)GetXYZ(position).z);
+    }
 
-        x = (int)worldPosition.x;
-        y = (int)worldPosition.y;
-        z = (int)worldPosition.z;
+    public void SetBuilding(int x, int y, int z, GameObject building)
+    {
+        gridArray[x, y, z] = building;
 
-        SetValue(x, y, z, value);
+    }
+
+    public void SetBuilding(Vector3 worldPosition, GameObject building)
+    {
+        SetBuilding((int)GetXYZ(worldPosition).x, (int)GetXYZ(worldPosition).y, (int)GetXYZ(worldPosition).z, building);
 
     }
 }
