@@ -11,7 +11,9 @@ public class CameraMovement : MonoBehaviour
 {
     public Transform cameraTransform;
 
-    float movementSpeed;
+    private float lowerZoomLimit = 80f;
+    private float upperZoomLimit = 500f;
+    private float movementSpeed;
     public float movementTime;
     public float normalSpeed;
     public float fastSpeed;
@@ -84,19 +86,19 @@ public class CameraMovement : MonoBehaviour
         {
 
             newZoom += zoomAmmount;
-            if (newZoom.y < 80f && newZoom.z > -80f)
+            if (newZoom.y < lowerZoomLimit && newZoom.z > -lowerZoomLimit)
             {
-                newZoom.y = 80f;
-                newZoom.z = -80f;
+                newZoom.y = lowerZoomLimit;
+                newZoom.z = -lowerZoomLimit;
             }
         }
         if (Input.GetKey(KeyCode.F))
         {
             newZoom -= zoomAmmount;
-            if (newZoom.y > 500f && newZoom.z < -500f)
+            if (newZoom.y > upperZoomLimit && newZoom.z < -upperZoomLimit)
             {
-                newZoom.y = 500f;
-                newZoom.z = -500f;
+                newZoom.y = upperZoomLimit;
+                newZoom.z = -upperZoomLimit;
             }
         }
 
@@ -111,18 +113,20 @@ public class CameraMovement : MonoBehaviour
         if (Input.mouseScrollDelta.y != 0)
         {
             newZoom += Input.mouseScrollDelta.y * zoomAmmount;
-            if (newZoom.y > 500f && newZoom.z < -500f)
+            if (newZoom.y > upperZoomLimit && newZoom.z < -upperZoomLimit)
             {
-                newZoom.y = 500f;
-                newZoom.z = -500f;
+                newZoom.y = upperZoomLimit;
+                newZoom.z = -upperZoomLimit;
             }
-            else if (newZoom.y < 80f && newZoom.z > -80f)
+            else if (newZoom.y < lowerZoomLimit && newZoom.z > -lowerZoomLimit)
             {
-                newZoom.y = 80f;
-                newZoom.z = -80f;
+                newZoom.y = lowerZoomLimit;
+                newZoom.z = -lowerZoomLimit;
             }
         }
-
+        ////////////////////////////////////////////////////
+        // Moving the camera by "catch & drag" the screen //
+        ////////////////////////////////////////////////////
         /*
                 if (Input.GetMouseButtonDown(0))
                 {
