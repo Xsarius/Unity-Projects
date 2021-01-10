@@ -4,17 +4,55 @@ using UnityEngine;
 
 public class BuildingSystemOperator : MonoBehaviour
 {
+    ///////////////
+    // Variables //
+    ///////////////
+    //
+    // Summary:
+    //     
+    //
+    //
     public Chunk chunk;
-
+    //
+    // Summary:
+    //     
+    //
+    //
     private Vector3 mouseCurrentRay;
-
+    //
+    // Summary:
+    //     
+    //
+    //
     public GameObject destroyer;
-
+    //
+    // Summary:
+    //     
+    //
+    //
     public GameObject[] referenceBuildings;
+    //
+    // Summary:
+    //     
+    //
+    //
     public GameObject[] buildingButtons;
-
+    //
+    // Summary:
+    //     
+    //
+    //
     public List<GameObject> buildings;
 
+    /////////////
+    // Methods //
+    /////////////
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     public void UpdateBuildingSystem()
     {
 
@@ -31,7 +69,12 @@ public class BuildingSystemOperator : MonoBehaviour
         }
 
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     private void HandleBuilding()
     {
         GameObject notPlacedBuilding = null;
@@ -53,22 +96,18 @@ public class BuildingSystemOperator : MonoBehaviour
         {
             DeactivateBuildingButtons();
 
-            notPlacedBuilding.transform.position = new Vector3(GetMouseClickPosition().x, GetMouseClickPosition().y + notPlacedBuilding.transform.localScale.y / 2, GetMouseClickPosition().z);
+            notPlacedBuilding.transform.position = new Vector3(GetMouseClickPosition().x, GetMouseClickPosition().y + notPlacedBuilding.transform.localScale.y, GetMouseClickPosition().z);
 
-            Vector3 nearestCellCenter;
+            Vector3 nearestCellCenter = NearestCellCenter(notPlacedBuilding);
 
-            nearestCellCenter = GetXYZ(notPlacedBuilding.transform.position);
-            nearestCellCenter = GetWorldPosition((int)nearestCellCenter.x, (int)nearestCellCenter.y, (int)nearestCellCenter.z);
-            nearestCellCenter += new Vector3(chunk.data.cellSize * .5f, 0, chunk.data.cellSize * .5f);
-
-            notPlacedBuilding.transform.position = new Vector3(nearestCellCenter.x, notPlacedBuilding.transform.position.y, nearestCellCenter.z);
+            notPlacedBuilding.transform.position = new Vector3(nearestCellCenter.x, nearestCellCenter.y + notPlacedBuilding.transform.localScale.y, nearestCellCenter.z);
 
             if (Input.GetMouseButtonDown(0))
             {
-                if (IsSlotFree(notPlacedBuilding.transform.position))
+                if (IsSlotFree(GetXYZ(notPlacedBuilding.transform.position)))
                 {
-                    SetBuilding(notPlacedBuilding.transform.position, notPlacedBuilding);
-                    notPlacedBuilding.transform.position = new Vector3(nearestCellCenter.x, notPlacedBuilding.transform.position.y, nearestCellCenter.z);
+                    SetBuilding(GetXYZ(notPlacedBuilding.transform.position), notPlacedBuilding);
+                    notPlacedBuilding.transform.position = new Vector3(nearestCellCenter.x, nearestCellCenter.y + notPlacedBuilding.transform.localScale.y, nearestCellCenter.z);
                     notPlacedBuilding.GetComponent<BuildingProperties>().isPlaced = true;
                 }
             }
@@ -80,16 +119,18 @@ public class BuildingSystemOperator : MonoBehaviour
         }
 
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     private void Destroyer()
     {
-        Vector3 nearestCellCenter = new Vector3();
 
         destroyer.transform.position = GetMouseClickPosition();
 
-        nearestCellCenter = GetXYZ(destroyer.transform.position);                                                           // Get cell.
-        nearestCellCenter = GetWorldPosition((int)nearestCellCenter.x, (int)nearestCellCenter.y, (int)nearestCellCenter.z); // Get origin position of the cell.
-        nearestCellCenter += new Vector3(chunk.data.cellSize * .5f, 0, chunk.data.cellSize * .5f);                                    // Move to the center of the cell.
+        Vector3 nearestCellCenter = NearestCellCenter(destroyer);
 
         destroyer.transform.position = new Vector3(nearestCellCenter.x, destroyer.transform.position.y, nearestCellCenter.z);
 
@@ -113,9 +154,20 @@ public class BuildingSystemOperator : MonoBehaviour
             destroyer.SetActive(false);
         }
     }
-
-
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //     
+    //
+    //  
+    //     
+    //
+    // Returns:
+    //     
+    //     
     private Vector3 GetMouseClickPosition()
 
     {
@@ -133,9 +185,46 @@ public class BuildingSystemOperator : MonoBehaviour
 
         return mouse;
     }
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //     
+    //
+    //  
+    //     
+    //
+    // Returns:
+    //     
+    //    
+    private Vector3 NearestCellCenter(GameObject objectToPosition)
+    {
+        Vector3 nearestCellCenter;
 
-    // Building commands //
+        nearestCellCenter = GetXYZ(objectToPosition.transform.position);
+        nearestCellCenter = GetWorldPosition((int)nearestCellCenter.x, (int)nearestCellCenter.y, (int)nearestCellCenter.z);
+        nearestCellCenter += new Vector3(chunk.data.cellSize * .5f, 0, chunk.data.cellSize * .5f);
 
+        return nearestCellCenter;
+    }
+
+    // Building commands 
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //     
+    //
+    //  
+    //     
+    //
+    // Returns:
+    //     
+    //    
     private GameObject CreateBuilding()
     {
         GameObject newBuilding = new GameObject();
@@ -146,12 +235,17 @@ public class BuildingSystemOperator : MonoBehaviour
 
         return newBuilding;
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     private void CreateCylinderBuilding()
     {
         GameObject copy = CreateBuilding();
 
-        copy.name = "new cylinder building";
+        copy.name = "Cylinder Building " + 0;
         copy.transform.localScale = referenceBuildings[0].transform.localScale;
         copy.GetComponent<MeshFilter>().mesh = referenceBuildings[0].GetComponent<MeshFilter>().mesh;
         copy.GetComponent<MeshRenderer>().material = referenceBuildings[0].GetComponent<MeshRenderer>().material;
@@ -161,12 +255,17 @@ public class BuildingSystemOperator : MonoBehaviour
 
         buildings.Add(copy);
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     private void CreateCubeBuilding()
     {
         GameObject copy = CreateBuilding();
 
-        copy.name = "new cube building";
+        copy.name = "Cube Building " + 0;
         copy.transform.localScale = referenceBuildings[1].transform.localScale;
         copy.GetComponent<MeshFilter>().mesh = referenceBuildings[1].GetComponent<MeshFilter>().mesh;
         copy.GetComponent<MeshRenderer>().material = referenceBuildings[1].GetComponent<MeshRenderer>().material;
@@ -176,53 +275,81 @@ public class BuildingSystemOperator : MonoBehaviour
 
         buildings.Add(copy);
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //     
+    //
+    //  
+    //     
+    //
+    // Returns:
+    //     
+    //
     public Vector3 GetWorldPosition(int x, int y, int z)
     {
-        return new Vector3(x, y, z) * chunk.data.cellSize + chunk.chunkOffset;
+        return (new Vector3(x, y, z) + chunk.chunkOffset) * chunk.data.cellSize;
     }
-
-    public Vector3 GetXYZ(Vector3 worldPosition)
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //     
+    //
+    //  
+    //     
+    //
+    // Returns:
+    //     
+    //
+    public Vector3 GetXYZ(Vector3 position)
     {
-        Vector3 gridPosition = new Vector3();
+        Vector3 gridPosition;
 
-        gridPosition.x = Mathf.FloorToInt((worldPosition - chunk.chunkOffset).x / chunk.data.cellSize);
-        gridPosition.y = Mathf.FloorToInt((worldPosition + chunk.chunkOffset).y / chunk.data.cellSize);
-        gridPosition.z = Mathf.FloorToInt((worldPosition - chunk.chunkOffset).z / chunk.data.cellSize);
+        gridPosition.x = Mathf.FloorToInt((position - chunk.chunkOffset * chunk.data.cellSize).x / chunk.data.cellSize);
+        gridPosition.y = Mathf.FloorToInt((position + chunk.chunkOffset * chunk.data.cellSize).y / chunk.data.cellSize);
+        gridPosition.z = Mathf.FloorToInt((position - chunk.chunkOffset * chunk.data.cellSize).z / chunk.data.cellSize);
 
         return gridPosition;
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     public bool IsSlotFree(int x, int y, int z)
     {
-        if (x >= 0 && y >= 0 && z >= 0 && x < chunk.data.chunkSize.x && y < chunk.data.chunkSize.y && z < chunk.data.chunkSize.z)
+        if (x >= 0 && z >= 0 && x <= chunk.data.chunkSize.x - 1 && z <= chunk.data.chunkSize.z - 1)
         {
-            if (chunk.buildingGrid[x, z] != null)
+            if (chunk.buildingGrid.grid[x + z * (int)chunk.data.chunkSize.x] != null)
             {
+
                 return false;
             }
             else
             {
+
                 return true;
             }
         }
         else
         {
+
             return false;
         }
     }
-
-    public void FreeSlot(Vector3 position)
-    {
-        position = GetXYZ(position);
-
-        int x = (int)position.x;
-        int y = (int)position.y;
-        int z = (int)position.z;
-
-        FreeSlot(x, y, z);
-    }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     public bool IsSlotFree(Vector3 position)
     {
         position = GetXYZ(position);
@@ -233,18 +360,48 @@ public class BuildingSystemOperator : MonoBehaviour
 
         return IsSlotFree(x, y, z);
     }
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
+    public void FreeSlot(Vector3 position)
+    {
+        position = GetXYZ(position);
 
+        int x = (int)position.x;
+        int y = (int)position.y;
+        int z = (int)position.z;
+
+        FreeSlot(x, y, z);
+    }
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     public void FreeSlot(int x, int y, int z)
     {
-        chunk.buildingGrid[x, z] = null;
+        chunk.buildingGrid.grid[x + z * (int)chunk.data.chunkSize.x] = null;
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     public void SetBuilding(int x, int y, int z, GameObject building)
     {
-        chunk.buildingGrid[x, z] = building;
-
+        chunk.buildingGrid.grid[x + z * (int)chunk.data.chunkSize.x] = building;
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     public void SetBuilding(Vector3 position, GameObject building)
     {
         position = GetXYZ(position);
@@ -255,12 +412,38 @@ public class BuildingSystemOperator : MonoBehaviour
 
         SetBuilding(x, y, z, building);
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //     
+    //
+    //  
+    //     
+    //
+    // Returns:
+    //     GameObject located in a grid at x,y,z coordinates, ex. grid[x,y,z]
+    //
     public GameObject FindObjectInGrid(int x, int y, int z)
     {
-        return chunk.buildingGrid[x, z];
+        return chunk.buildingGrid.grid[x + z * (int)chunk.data.chunkSize.x];
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //     
+    //
+    //  
+    //     
+    //
+    // Returns:
+    //     
+    //
     public GameObject FindObjectInGrid(Vector3 position)
     {
         position = GetXYZ(position);
@@ -273,23 +456,43 @@ public class BuildingSystemOperator : MonoBehaviour
     }
 
     // Buttons commands //
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     public void DestroyButtonClick()
     {
         destroyer.SetActive(true);
         destroyer.transform.position = GetMouseClickPosition();
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     public void BuildingButton_Cylinder_Click()
     {
         CreateCylinderBuilding();
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     public void BuildingButton_Cube_Click()
     {
         CreateCubeBuilding();
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     private void ActivateBuildingButtons()
     {
         for (int i = 0; i < buildingButtons.GetLength(0); i++)
@@ -297,7 +500,12 @@ public class BuildingSystemOperator : MonoBehaviour
             buildingButtons[i].SetActive(true);
         }
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     private void DeactivateBuildingButtons()
     {
         for (int i = 0; i < buildingButtons.GetLength(0); i++)

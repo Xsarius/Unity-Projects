@@ -4,30 +4,77 @@ using UnityEngine;
 
 public class Chunk
 {
-    // public in
-
+    ///////////////
+    // Variables //
+    ///////////////
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public Vector3 chunkOffset;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public ChunkSO data;
-
-    // public out
-    public Transform transform;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public Mesh mesh;
-
-    public GameObject[,] buildingGrid;
-
-
-    // private
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
+    public BuildingGrid buildingGrid;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     private Vector3[] verticies;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     private int[] triangles;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
+    public class BuildingGrid
+    {
+        public GameObject[] grid;
 
+        public BuildingGrid(int chunkWidth, int chunkLength)
+        {
+            grid = new GameObject[(chunkWidth - 1) * (chunkLength - 1)];
+        }
+    }
 
-
-    /////////////////////////////////////////
-
-    // Initialization of Chunk class element
+    /////////////
+    // Methods //
+    /////////////
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //   
     public void GenerateChunk(float noiseScale)
     {
 
@@ -36,8 +83,13 @@ public class Chunk
         GenerateBuildingGrid((int)data.chunkSize.x, (int)data.chunkSize.z);
 
     }
-
-    // Mesh generation 
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //   
     private void GenerateMesh(int chunkWidth, int chunkLength, float cellSize, float noiseScale)
     {
         verticies = new Vector3[chunkWidth * chunkLength];
@@ -80,13 +132,24 @@ public class Chunk
 
         UpdateMesh();
     }
-
-    // Building grid genertion
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //     
     private void GenerateBuildingGrid(int chunkWidth, int chunkLength)
     {
-        buildingGrid = new GameObject[chunkWidth / 2, chunkLength / 2];
+        buildingGrid = new BuildingGrid(chunkWidth, chunkLength);
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //   
     public void UpdateMesh()
     {
         mesh.Clear();
@@ -96,9 +159,15 @@ public class Chunk
 
         mesh.RecalculateNormals();
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //   
     public void AdjustToOffset(Vector3 offset)
     {
-        chunkOffset = offset;
+        chunkOffset = offset * data.cellSize;
     }
 }

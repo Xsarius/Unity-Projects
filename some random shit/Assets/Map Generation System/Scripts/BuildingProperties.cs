@@ -4,7 +4,15 @@ using UnityEngine;
 
 public class BuildingProperties : MonoBehaviour
 {
-
+    ///////////////
+    // Variables //
+    ///////////////
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public bool isPlaced;
 
 }

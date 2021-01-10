@@ -5,9 +5,28 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ChunkData", menuName = "ChunkData", order = 1)]
 public class ChunkSO : ScriptableObject
 {
+    ///////////////
+    // Variables //
+    ///////////////
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public Vector3 chunkSize;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public float cellSize;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public Material defaultMaterial;
 }

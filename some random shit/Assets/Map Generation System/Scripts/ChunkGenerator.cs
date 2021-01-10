@@ -4,30 +4,93 @@ using UnityEngine;
 
 public class ChunkGenerator : MonoBehaviour
 {
+    ///////////////
+    // Variables //
+    ///////////////
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public float noiseScale;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public int chunkCount;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public Vector3 offset;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     private Chunk chunk;
-
-    private BuildingSystemOperator buildingSystemOperator;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
+    public BuildingSystemOperator buildingSystemOperator;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public GameObject chunksFolder;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public ChunkSO data;
 
+    /////////////
+    // Methods //
+    /////////////
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //
     public void Start()
     {
         CreateChunk();
-    }
 
+
+    }
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //   
     public void Update()
     {
-
+        buildingSystemOperator.UpdateBuildingSystem();
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //   
+    //   
     private void CreateChunk()
     {
         chunk = new Chunk();
@@ -51,7 +114,7 @@ public class ChunkGenerator : MonoBehaviour
         newChunk.GetComponent<MeshCollider>().sharedMesh = chunk.mesh;
         newChunk.GetComponent<MeshRenderer>().material = chunk.data.defaultMaterial;
 
-
+        buildingSystemOperator.chunk = chunk;
 
         chunkCount++;
     }

@@ -9,42 +9,154 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
+    ///////////////
+    // Variables //
+    ///////////////
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public Transform cameraTransform;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     private float lowerZoomLimit = 80f;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     private float upperZoomLimit = 500f;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     private float movementSpeed;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public float movementTime;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public float normalSpeed;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public float fastSpeed;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public float rotationAmmount;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public Vector3 zoomAmmount;
-    Vector3 newPosition;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     public Vector3 newZoom;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
+    Vector3 newPosition;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     Vector3 dragStartPosition;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     Vector3 dragCurrentPosition;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     Vector3 rotateStartPosition;
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     Vector3 rotateCurrentPosition;
-
+    //
+    // Summary:
+    //     
+    //
+    // 
+    //
     Quaternion newRotation;
 
-
-    // Start is called before the first frame update
+    /////////////
+    // Methods //
+    /////////////
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     void Start()
     {
         newPosition = transform.position;
         newRotation = transform.rotation;
         newZoom = cameraTransform.localPosition;
     }
-
-    // Update is called once per frame
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     void Update()
     {
         HandleMouseInput();
         HandleMovementInput();
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     void HandleMovementInput()
     {
         if (Input.GetKey(KeyCode.LeftShift))
@@ -107,7 +219,12 @@ public class CameraMovement : MonoBehaviour
         cameraTransform.localPosition = Vector3.Lerp(cameraTransform.localPosition, newZoom, Time.deltaTime * movementTime);
 
     }
-
+    //
+    // Summary:
+    //     
+    //
+    // Parameters:
+    //
     void HandleMouseInput()
     {
         if (Input.mouseScrollDelta.y != 0)
