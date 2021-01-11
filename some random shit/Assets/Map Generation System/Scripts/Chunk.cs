@@ -34,6 +34,11 @@ public class Chunk
     public BuildingGrid buildingGrid;
     //
     // Summary:
+    //      GameObject related to generated chunk in the 
+    //          game hierarchy.
+    public GameObject chunkObject;
+    //
+    // Summary:
     //     3-dim array containing all of the chunk's
     //      verticies.
     // 
@@ -48,7 +53,8 @@ public class Chunk
     //
     //      int[,] triangles = new int[n,3];
     //
-    //      where n is number of triangles.   
+    //      where n is number of triangles, or
+    //      n = map width * map length * 2.   
     // 
     private int[,] triangles;
     //
@@ -60,8 +66,11 @@ public class Chunk
     {
         public GameObject[,,] grid;
 
-        public BuildingGrid(int chunkWidth, int chunkHeight, int chunkLength)
+        public BuildingGrid(int chunkWidth, int chunkHeight, int chunkLength, ChunkSO data)
         {
+            chunkWidth /= data.cellSize;
+            chunkHeight /= data.cellSize;
+            chunkLength /= data.cellSize;
             grid = new GameObject[chunkWidth, chunkHeight, chunkLength];
         }
     }
@@ -157,8 +166,8 @@ public class Chunk
     }
     //
     // Summary:
-    //     Function chaning verticies custom made 3-dim coordination system
-    //      to 1-dim array, needed for built-in mesh system.
+    //     Function chaning verticies custom made 3-dim coordinates system
+    //      into 1-dim array, needed for built-in mesh system.
     //
     public Vector3[] Verticies()
     {
@@ -179,8 +188,8 @@ public class Chunk
     }
     //
     // Summary:
-    //     Function chaning verticies custom made 3-dim coordination system
-    //      to 1-dim array, needed for built-in mesh system.
+    //     Function chaning triangles custom made 2-dim coordinates system
+    //      into 1-dim array, needed for built-in mesh system.
     //
     public int[] Triangles()
     {
@@ -209,11 +218,7 @@ public class Chunk
     //
     private void GenerateBuildingGrid(int chunkWidth, int chunkHeight, int chunkLength)
     {
-        chunkWidth /= data.cellSize;
-        chunkHeight /= data.cellSize;
-        chunkLength /= data.cellSize;
-
-        buildingGrid = new BuildingGrid(chunkWidth, chunkHeight, chunkLength);
+        buildingGrid = new BuildingGrid(chunkWidth, chunkHeight, chunkLength, data);
     }
     //
     // Summary:

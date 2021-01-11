@@ -9,38 +9,36 @@ public class BuildingSystemOperator : MonoBehaviour
     ///////////////
     //
     // Summary:
-    //     
-    //
+    //     Custom chunk class element
+    //      on which all of the building 
+    //      related operations are performed.
     //
     public Chunk chunk;
     //
     // Summary:
-    //     
-    //
+    //     Position of the mouse pointer   
+    //      raycasted on to terrain / map.
     //
     private Vector3 mouseCurrentRay;
     //
     // Summary:
-    //     
-    //
+    //     GameObject used to destroy placed buildings.     
     //
     public GameObject destroyer;
     //
     // Summary:
-    //     
-    //
+    //     Array containing prefabs of the buildings.     
     //
     public GameObject[] referenceBuildings;
     //
     // Summary:
-    //     
-    //
+    //     Array containing the UI building buttons.
     //
     public GameObject[] buildingButtons;
     //
     // Summary:
-    //     
-    //
+    //     List of all created buildings.    
+    //     (Instaciated)
     //
     public List<GameObject> buildings;
 
@@ -50,8 +48,6 @@ public class BuildingSystemOperator : MonoBehaviour
     //
     // Summary:
     //     
-    //
-    // Parameters:
     //
     public void UpdateBuildingSystem()
     {
@@ -72,8 +68,6 @@ public class BuildingSystemOperator : MonoBehaviour
     //
     // Summary:
     //     
-    //
-    // Parameters:
     //
     private void HandleBuilding()
     {
@@ -96,7 +90,7 @@ public class BuildingSystemOperator : MonoBehaviour
         {
             DeactivateBuildingButtons();
 
-            notPlacedBuilding.transform.position = new Vector3(GetMouseClickPosition().x, GetMouseClickPosition().y + notPlacedBuilding.transform.localScale.y, GetMouseClickPosition().z);
+            notPlacedBuilding.transform.position = new Vector3(GetMouseRaycastPosition().x, GetMouseRaycastPosition().y + notPlacedBuilding.transform.localScale.y, GetMouseRaycastPosition().z);
 
             Vector3 nearestCellCenter = NearestCellCenter(notPlacedBuilding);
 
@@ -123,12 +117,10 @@ public class BuildingSystemOperator : MonoBehaviour
     // Summary:
     //     
     //
-    // Parameters:
-    //
     private void Destroyer()
     {
 
-        destroyer.transform.position = GetMouseClickPosition();
+        destroyer.transform.position = GetMouseRaycastPosition();
 
         Vector3 nearestCellCenter = NearestCellCenter(destroyer);
 
@@ -156,19 +148,17 @@ public class BuildingSystemOperator : MonoBehaviour
     }
     //
     // Summary:
-    //     
-    //
-    // Parameters:
-    //   
-    //     
-    //
-    //  
-    //     
+    //     Function uses Ray and Plane 
+    //      classes to calculate the mouse 
+    //      pointer position in a function
+    //      cast time instance.
     //
     // Returns:
-    //     
-    //     
-    private Vector3 GetMouseClickPosition()
+    //     Position of the mouse pointer
+    //      raycasted on the terrain / map,
+    //      as a Vector3 element.
+    //
+    private Vector3 GetMouseRaycastPosition()
 
     {
         Vector3 mouse = new Vector3();
@@ -187,18 +177,18 @@ public class BuildingSystemOperator : MonoBehaviour
     }
     //
     // Summary:
-    //     
+    //     Function calculates nearest cell
+    //      center to given input object in
+    //      a function cast time instance. 
     //
     // Parameters:
-    //   
-    //     
-    //
-    //  
-    //     
+    //     objectToPosition - input object
+    //      for which cell center will be calculated.
     //
     // Returns:
-    //     
-    //    
+    //     Position of the nearest cell center 
+    //      to given <parameter> object as a 
+    //      Vector3 element.
     private Vector3 NearestCellCenter(GameObject objectToPosition)
     {
         Vector3 nearestCellCenter;
@@ -210,16 +200,10 @@ public class BuildingSystemOperator : MonoBehaviour
         return nearestCellCenter;
     }
 
-    // Building commands 
+    // Building commands //
     //
     // Summary:
     //     
-    //
-    // Parameters:
-    //   
-    //     
-    //
-    //  
     //     
     //
     // Returns:
@@ -239,8 +223,6 @@ public class BuildingSystemOperator : MonoBehaviour
     // Summary:
     //     
     //
-    // Parameters:
-    //
     private void CreateCylinderBuilding()
     {
         GameObject copy = CreateBuilding();
@@ -250,7 +232,7 @@ public class BuildingSystemOperator : MonoBehaviour
         copy.GetComponent<MeshFilter>().mesh = referenceBuildings[0].GetComponent<MeshFilter>().mesh;
         copy.GetComponent<MeshRenderer>().material = referenceBuildings[0].GetComponent<MeshRenderer>().material;
         copy.GetComponent<BuildingProperties>().isPlaced = false;
-        copy.transform.position = GetMouseClickPosition();
+        copy.transform.position = GetMouseRaycastPosition();
         copy.transform.rotation = Quaternion.identity;
 
         buildings.Add(copy);
@@ -258,8 +240,6 @@ public class BuildingSystemOperator : MonoBehaviour
     //
     // Summary:
     //     
-    //
-    // Parameters:
     //
     private void CreateCubeBuilding()
     {
@@ -270,7 +250,7 @@ public class BuildingSystemOperator : MonoBehaviour
         copy.GetComponent<MeshFilter>().mesh = referenceBuildings[1].GetComponent<MeshFilter>().mesh;
         copy.GetComponent<MeshRenderer>().material = referenceBuildings[1].GetComponent<MeshRenderer>().material;
         copy.GetComponent<BuildingProperties>().isPlaced = false;
-        copy.transform.position = GetMouseClickPosition();
+        copy.transform.position = GetMouseRaycastPosition();
         copy.transform.rotation = Quaternion.identity;
 
         buildings.Add(copy);
@@ -280,11 +260,11 @@ public class BuildingSystemOperator : MonoBehaviour
     //     
     //
     // Parameters:
-    //   
+    //      x -
     //     
-    //
+    //      y -
     //  
-    //     
+    //      z -
     //
     // Returns:
     //     
@@ -298,7 +278,7 @@ public class BuildingSystemOperator : MonoBehaviour
     //     
     //
     // Parameters:
-    //   
+    //      position - 
     //     
     //
     //  
@@ -322,6 +302,14 @@ public class BuildingSystemOperator : MonoBehaviour
     //     
     //
     // Parameters:
+    //      x -
+    //
+    //      y -
+    //
+    //      z -
+    //
+    //  Returns:
+    //  
     //
     public bool IsSlotFree(int x, int y, int z)
     {
@@ -349,6 +337,11 @@ public class BuildingSystemOperator : MonoBehaviour
     //     
     //
     // Parameters:
+    //      positions - 
+    //
+    //
+    //  Returns:
+    //
     //
     public bool IsSlotFree(Vector3 position)
     {
@@ -365,6 +358,8 @@ public class BuildingSystemOperator : MonoBehaviour
     //     
     //
     // Parameters:
+    //      position - 
+    //
     //
     public void FreeSlot(Vector3 position)
     {
@@ -381,6 +376,12 @@ public class BuildingSystemOperator : MonoBehaviour
     //     
     //
     // Parameters:
+    //      x -
+    //
+    //      y -
+    //
+    //      z -
+    //
     //
     public void FreeSlot(int x, int y, int z)
     {
@@ -391,6 +392,15 @@ public class BuildingSystemOperator : MonoBehaviour
     //     
     //
     // Parameters:
+    //      x -
+    //
+    //      y -
+    //
+    //      z -
+    //
+    //      building -
+    //
+    //
     //
     public void SetBuilding(int x, int y, int z, GameObject building)
     {
@@ -401,6 +411,12 @@ public class BuildingSystemOperator : MonoBehaviour
     //     
     //
     // Parameters:
+    //      position - 
+    //
+    //
+    //      building -
+    //
+    //
     //
     public void SetBuilding(Vector3 position, GameObject building)
     {
@@ -417,14 +433,14 @@ public class BuildingSystemOperator : MonoBehaviour
     //     
     //
     // Parameters:
-    //   
+    //      x -
     //     
-    //
+    //      y - 
     //  
-    //     
+    //      z -
     //
     // Returns:
-    //     GameObject located in a grid at x,y,z coordinates, ex. grid[x,y,z]
+    //     GameObject located in a grid at x,y,z coordinates, ex. grid[x,y,z].
     //
     public GameObject FindObjectInGrid(int x, int y, int z)
     {
@@ -435,14 +451,11 @@ public class BuildingSystemOperator : MonoBehaviour
     //     
     //
     // Parameters:
-    //   
-    //     
-    //
-    //  
+    //      position -
     //     
     //
     // Returns:
-    //     
+    //     GameObject located in a grid at x,y,z coordinates, ex. grid[x,y,z].
     //
     public GameObject FindObjectInGrid(Vector3 position)
     {
@@ -458,20 +471,18 @@ public class BuildingSystemOperator : MonoBehaviour
     // Buttons commands //
     //
     // Summary:
-    //     
-    //
-    // Parameters:
+    //     Action to be performed on 
+    //      destroy button click.
     //
     public void DestroyButtonClick()
     {
         destroyer.SetActive(true);
-        destroyer.transform.position = GetMouseClickPosition();
+        destroyer.transform.position = GetMouseRaycastPosition();
     }
     //
     // Summary:
-    //     
-    //
-    // Parameters:
+    //     Action to be performed on 
+    //      cylinder button click.    
     //
     public void BuildingButton_Cylinder_Click()
     {
@@ -479,9 +490,8 @@ public class BuildingSystemOperator : MonoBehaviour
     }
     //
     // Summary:
-    //     
-    //
-    // Parameters:
+    //     Action to be performed on 
+    //      cube button click.
     //
     public void BuildingButton_Cube_Click()
     {
@@ -489,10 +499,9 @@ public class BuildingSystemOperator : MonoBehaviour
     }
     //
     // Summary:
-    //     
-    //
-    // Parameters:
-    //
+    //     Activating all buttons stored 
+    //      in the buildingButtons[] array.
+    //  
     private void ActivateBuildingButtons()
     {
         for (int i = 0; i < buildingButtons.GetLength(0); i++)
@@ -502,9 +511,8 @@ public class BuildingSystemOperator : MonoBehaviour
     }
     //
     // Summary:
-    //     
-    //
-    // Parameters:
+    //     Deactivating all buttons stored 
+    //      in the buildingButtons[] array.
     //
     private void DeactivateBuildingButtons()
     {
