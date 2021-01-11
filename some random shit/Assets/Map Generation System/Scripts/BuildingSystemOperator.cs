@@ -327,7 +327,7 @@ public class BuildingSystemOperator : MonoBehaviour
     {
         if (x >= 0 && z >= 0 && x <= chunk.data.chunkSize.x - 1 && z <= chunk.data.chunkSize.z - 1)
         {
-            if (chunk.buildingGrid.grid[x + z * (int)chunk.data.chunkSize.x] != null)
+            if (chunk.buildingGrid.grid[x, y, z] != null)
             {
 
                 return false;
@@ -384,7 +384,7 @@ public class BuildingSystemOperator : MonoBehaviour
     //
     public void FreeSlot(int x, int y, int z)
     {
-        chunk.buildingGrid.grid[x + z * (int)chunk.data.chunkSize.x] = null;
+        chunk.buildingGrid.grid[x, y, z] = null;
     }
     //
     // Summary:
@@ -394,7 +394,7 @@ public class BuildingSystemOperator : MonoBehaviour
     //
     public void SetBuilding(int x, int y, int z, GameObject building)
     {
-        chunk.buildingGrid.grid[x + z * (int)chunk.data.chunkSize.x] = building;
+        chunk.buildingGrid.grid[x, y, z] = building;
     }
     //
     // Summary:
@@ -428,7 +428,7 @@ public class BuildingSystemOperator : MonoBehaviour
     //
     public GameObject FindObjectInGrid(int x, int y, int z)
     {
-        return chunk.buildingGrid.grid[x + z * (int)chunk.data.chunkSize.x];
+        return chunk.buildingGrid.grid[x, y, z];
     }
     //
     // Summary:

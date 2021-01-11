@@ -21,7 +21,8 @@ public class ChunkSO : ScriptableObject
     //
     // 
     //
-    public float cellSize;
+    [Range(1, 10)]
+    public int cellSize;
     //
     // Summary:
     //     

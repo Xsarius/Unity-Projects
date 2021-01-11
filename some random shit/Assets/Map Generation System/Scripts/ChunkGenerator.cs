@@ -11,23 +11,12 @@ public class ChunkGenerator : MonoBehaviour
     // Summary:
     //     
     //
-    // 
-    //
     public float noiseScale;
     //
     // Summary:
-    //     
-    //
-    // 
+    //     Number of a chunks to be generated.
     //
     public int chunkCount;
-    //
-    // Summary:
-    //     
-    //
-    // 
-    //
-    public Vector3 offset;
     //
     // Summary:
     //     
@@ -39,22 +28,15 @@ public class ChunkGenerator : MonoBehaviour
     // Summary:
     //     
     //
-    // 
-    //
     public BuildingSystemOperator buildingSystemOperator;
     //
     // Summary:
-    //     
-    //
-    // 
+    //     GameObject used as a folder; just to clean up the mess.
     //
     public GameObject chunksFolder;
     //
     // Summary:
-    //     
-    //
-    // 
-    //
+    //     Scriptable 
     public ChunkSO data;
 
     /////////////
@@ -62,24 +44,16 @@ public class ChunkGenerator : MonoBehaviour
     /////////////
     //
     // Summary:
-    //     
-    //
-    // Parameters:
-    //   
+    //     Unity built-in start function;
     //
     public void Start()
     {
         CreateChunk();
-
-
     }
     //
     // Summary:
-    //     
+    //       Unity built-in update function.
     //
-    // Parameters:
-    //   
-    //   
     public void Update()
     {
         buildingSystemOperator.UpdateBuildingSystem();
@@ -87,19 +61,17 @@ public class ChunkGenerator : MonoBehaviour
     //
     // Summary:
     //     
-    //
-    // Parameters:
-    //   
-    //   
+    //  
     private void CreateChunk()
     {
         chunk = new Chunk();
 
         chunk.data = data;
+
+        Vector3 offset = new Vector3();
         chunk.chunkOffset = offset;
 
-        chunk.GenerateChunk(noiseScale);
-        chunk.AdjustToOffset(offset);
+        chunk.GenerateChunk(noiseScale, offset);
 
         GameObject newChunk = new GameObject("Chunk" + chunkCount);
 
