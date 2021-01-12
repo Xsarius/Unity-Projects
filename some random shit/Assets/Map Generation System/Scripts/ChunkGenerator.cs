@@ -74,7 +74,7 @@ public class ChunkGenerator : MonoBehaviour
     //  
     private void CreateChunk(int ID)
     {
-        Vector3 offset = new Vector3();
+        Vector3 offset = new Vector3(0, 0, 0);
 
         chunk = new Chunk();
 
@@ -97,10 +97,12 @@ public class ChunkGenerator : MonoBehaviour
         newChunk.GetComponent<MeshCollider>().sharedMesh = chunk.mesh;
         newChunk.GetComponent<MeshRenderer>().material = chunk.data.defaultMaterial;
 
+        buildingSystemOperator.chunk = chunk;
+
         // Connecting GameObject with the chunk.
         chunk.chunkObject = newChunk;
 
         // Updating chunk list.
-        chunks.Add(chunk);
+        //chunks.Add(chunk);
     }
 }

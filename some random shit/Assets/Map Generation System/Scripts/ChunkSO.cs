@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ChunkData", menuName = "ChunkData", order = 1)]
+[CreateAssetMenu(fileName = "ChunkData", menuName = "Chunk Data", order = 1)]
 public class ChunkSO : ScriptableObject
 {
     ///////////////
@@ -10,19 +10,18 @@ public class ChunkSO : ScriptableObject
     ///////////////
     //
     // Summary:
-    //     
-    //
-    // 
+    //     Size of every chunk generated in the
+    //      game. Counted as number of quads,
+    //      number of verticies / 2 * cellSize. 
     //
     public Vector3 chunkSize;
     //
     // Summary:
-    //     
+    //     Factor of scale, matter only in 
+    //      setting just the right perspective
+    //      shouldn't be reachable by user.
     //
-    // 
-    //
-    [Range(1, 10)]
-    public int cellSize;
+    public int cellSize = 1;
     //
     // Summary:
     //     

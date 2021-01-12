@@ -38,9 +38,15 @@ public class BuildingSystemOperator : MonoBehaviour
     //
     // Summary:
     //     List of all created buildings.    
-    //     (Instaciated)
+    //      (Instaciated as a GameObject)
     //
     public List<GameObject> buildings;
+    //
+    // Summary:
+    //     List of all created roads.    
+    //      (Instaciated as a GameObject)
+    //
+    public List<GameObject> roads;
 
     /////////////
     // Methods //
@@ -94,14 +100,14 @@ public class BuildingSystemOperator : MonoBehaviour
 
             Vector3 nearestCellCenter = NearestCellCenter(notPlacedBuilding);
 
-            notPlacedBuilding.transform.position = new Vector3(nearestCellCenter.x, nearestCellCenter.y + notPlacedBuilding.transform.localScale.y, nearestCellCenter.z);
+            notPlacedBuilding.transform.position = new Vector3(nearestCellCenter.x, notPlacedBuilding.transform.localScale.y, nearestCellCenter.z);
 
             if (Input.GetMouseButtonDown(0))
             {
-                if (IsSlotFree(GetXYZ(notPlacedBuilding.transform.position)))
+                if (IsSlotFree(notPlacedBuilding.transform.position))
                 {
-                    SetBuilding(GetXYZ(notPlacedBuilding.transform.position), notPlacedBuilding);
-                    notPlacedBuilding.transform.position = new Vector3(nearestCellCenter.x, nearestCellCenter.y + notPlacedBuilding.transform.localScale.y, nearestCellCenter.z);
+                    SetBuilding(notPlacedBuilding.transform.position, notPlacedBuilding);
+                    notPlacedBuilding.transform.position = new Vector3(nearestCellCenter.x, notPlacedBuilding.transform.localScale.y, nearestCellCenter.z);
                     notPlacedBuilding.GetComponent<BuildingProperties>().isPlaced = true;
                 }
             }
@@ -204,10 +210,10 @@ public class BuildingSystemOperator : MonoBehaviour
     //
     // Summary:
     //     
-    //     
-    //
     // Returns:
-    //     
+    //     GameObject element with a basic components
+    //      MeshFilter,MeshRenderer and a custom class
+    //      component: BuildingProperties.
     //    
     private GameObject CreateBuilding()
     {
@@ -257,6 +263,18 @@ public class BuildingSystemOperator : MonoBehaviour
     }
     //
     // Summary:
+    //
+    //
+    private void CreateRoad()
+    {
+        GameObject roadTile = CreateBuilding();
+
+        roadTile.name = "Road" + roads.Capacity;
+
+        roads.Add(roadTile);
+    }
+    //
+    // Summary:
     //     
     //
     // Parameters:
@@ -271,14 +289,14 @@ public class BuildingSystemOperator : MonoBehaviour
     //
     public Vector3 GetWorldPosition(int x, int y, int z)
     {
-        return (new Vector3(x, y, z) + chunk.chunkOffset) * chunk.data.cellSize;
+        return new Vector3(x, y, z) * chunk.data.cellSize + chunk.chunkOffset;
     }
     //
     // Summary:
     //     
     //
     // Parameters:
-    //      position - 
+    //      objectPosition - 
     //     
     //
     //  
@@ -287,13 +305,13 @@ public class BuildingSystemOperator : MonoBehaviour
     // Returns:
     //     
     //
-    public Vector3 GetXYZ(Vector3 position)
+    public Vector3 GetXYZ(Vector3 objectPosition)
     {
-        Vector3 gridPosition;
+        Vector3 gridPosition = new Vector3();
 
-        gridPosition.x = Mathf.FloorToInt((position - chunk.chunkOffset * chunk.data.cellSize).x / chunk.data.cellSize);
-        gridPosition.y = Mathf.FloorToInt((position + chunk.chunkOffset * chunk.data.cellSize).y / chunk.data.cellSize);
-        gridPosition.z = Mathf.FloorToInt((position - chunk.chunkOffset * chunk.data.cellSize).z / chunk.data.cellSize);
+        gridPosition.x = Mathf.FloorToInt((objectPosition - chunk.chunkOffset).x / chunk.data.cellSize);
+        gridPosition.y = Mathf.FloorToInt((objectPosition + chunk.chunkOffset).y / chunk.data.cellSize);
+        gridPosition.z = Mathf.FloorToInt((objectPosition - chunk.chunkOffset).z / chunk.data.cellSize);
 
         return gridPosition;
     }
@@ -311,11 +329,11 @@ public class BuildingSystemOperator : MonoBehaviour
     //  Returns:
     //  
     //
-    public bool IsSlotFree(int x, int y, int z)
+    private bool IsSlotFree(int x, int y, int z)
     {
         if (x >= 0 && z >= 0 && x <= chunk.data.chunkSize.x - 1 && z <= chunk.data.chunkSize.z - 1)
         {
-            if (chunk.buildingGrid.grid[x, y, z] != null)
+            if (chunk.buildingGrid.grid[x, z] != null)
             {
 
                 return false;
@@ -383,9 +401,9 @@ public class BuildingSystemOperator : MonoBehaviour
     //      z -
     //
     //
-    public void FreeSlot(int x, int y, int z)
+    private void FreeSlot(int x, int y, int z)
     {
-        chunk.buildingGrid.grid[x, y, z] = null;
+        chunk.buildingGrid.grid[x, z] = null;
     }
     //
     // Summary:
@@ -402,9 +420,9 @@ public class BuildingSystemOperator : MonoBehaviour
     //
     //
     //
-    public void SetBuilding(int x, int y, int z, GameObject building)
+    private void SetBuilding(int x, int y, int z, GameObject building)
     {
-        chunk.buildingGrid.grid[x, y, z] = building;
+        chunk.buildingGrid.grid[x, z] = building;
     }
     //
     // Summary:
@@ -440,11 +458,11 @@ public class BuildingSystemOperator : MonoBehaviour
     //      z -
     //
     // Returns:
-    //     GameObject located in a grid at x,y,z coordinates, ex. grid[x,y,z].
+    //     GameObject located in a grid at x,z coordinates, ex. grid[x,z].
     //
-    public GameObject FindObjectInGrid(int x, int y, int z)
+    private GameObject FindObjectInGrid(int x, int y, int z)
     {
-        return chunk.buildingGrid.grid[x, y, z];
+        return chunk.buildingGrid.grid[x, z];
     }
     //
     // Summary:
@@ -455,7 +473,7 @@ public class BuildingSystemOperator : MonoBehaviour
     //     
     //
     // Returns:
-    //     GameObject located in a grid at x,y,z coordinates, ex. grid[x,y,z].
+    //     GameObject located in a grid at x,z coordinates, ex. grid[x,z].
     //
     public GameObject FindObjectInGrid(Vector3 position)
     {
@@ -469,34 +487,6 @@ public class BuildingSystemOperator : MonoBehaviour
     }
 
     // Buttons commands //
-    //
-    // Summary:
-    //     Action to be performed on 
-    //      destroy button click.
-    //
-    public void DestroyButtonClick()
-    {
-        destroyer.SetActive(true);
-        destroyer.transform.position = GetMouseRaycastPosition();
-    }
-    //
-    // Summary:
-    //     Action to be performed on 
-    //      cylinder button click.    
-    //
-    public void BuildingButton_Cylinder_Click()
-    {
-        CreateCylinderBuilding();
-    }
-    //
-    // Summary:
-    //     Action to be performed on 
-    //      cube button click.
-    //
-    public void BuildingButton_Cube_Click()
-    {
-        CreateCubeBuilding();
-    }
     //
     // Summary:
     //     Activating all buttons stored 
@@ -521,5 +511,42 @@ public class BuildingSystemOperator : MonoBehaviour
             buildingButtons[i].SetActive(false);
         }
     }
+    //
+    // Summary:
+    //     Action to be performed on 
+    //      destroy button click.
+    //
+    public void Button_Destroy()
+    {
+        destroyer.SetActive(true);
+        destroyer.transform.position = GetMouseRaycastPosition();
+    }
+    //
+    // Summary:
+    //     Action to be performed on 
+    //      cylinder button click.    
+    //
+    public void BuildingButton_Cylinder()
+    {
+        CreateCylinderBuilding();
+    }
+    //
+    // Summary:
+    //     Action to be performed on 
+    //      cube button click.
+    //
+    public void BuildingButton_Cube()
+    {
+        CreateCubeBuilding();
+    }
+    //
+    // Summary:
+    //
+    //
+    public void BuildingButton_Road()
+    {
+
+    }
+
 
 }

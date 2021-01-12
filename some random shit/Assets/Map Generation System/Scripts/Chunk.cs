@@ -64,14 +64,13 @@ public class Chunk
     // 
     public class BuildingGrid
     {
-        public GameObject[,,] grid;
+        public GameObject[,] grid;
 
-        public BuildingGrid(int chunkWidth, int chunkHeight, int chunkLength, ChunkSO data)
+        public BuildingGrid(int chunkWidth, int chunkLength, ChunkSO data)
         {
-            chunkWidth /= data.cellSize;
-            chunkHeight /= data.cellSize;
-            chunkLength /= data.cellSize;
-            grid = new GameObject[chunkWidth, chunkHeight, chunkLength];
+            chunkWidth -= 1;
+            chunkLength -= 1;
+            grid = new GameObject[chunkWidth, chunkLength];
         }
     }
 
@@ -114,10 +113,6 @@ public class Chunk
     //
     private void GenerateMesh(int chunkWidth, int chunkHeight, int chunkLength, float noiseScale, Vector3 offset)
     {
-        chunkWidth /= data.cellSize;
-        chunkHeight /= data.cellSize;
-        chunkLength /= data.cellSize;
-
         chunkOffset = offset;
 
         verticies = new Vector3[chunkWidth, chunkHeight, chunkLength];
@@ -135,10 +130,16 @@ public class Chunk
             {
                 for (int x = 0; x < chunkWidth; currentQuad++, x += 2)
                 {
-                    verticies[x, y, z] = new Vector3(x * data.cellSize - chunkOffset.x, heightMap[currentQuad] + chunkOffset.y, z * data.cellSize - chunkOffset.z);
-                    verticies[x + 1, y, z] = new Vector3((x + 1) * data.cellSize - chunkOffset.x, heightMap[currentQuad] + chunkOffset.y, z * data.cellSize - chunkOffset.z);
-                    verticies[x, y, z + 1] = new Vector3(x * data.cellSize - chunkOffset.x, heightMap[currentQuad] + chunkOffset.y, (z + 1) * data.cellSize - chunkOffset.z);
-                    verticies[x + 1, y, z + 1] = new Vector3((x + 1) * data.cellSize - chunkOffset.x, heightMap[currentQuad] + chunkOffset.y, (z + 1) * data.cellSize - chunkOffset.z);
+                    verticies[x, y, z] = new Vector3(x, heightMap[currentQuad], z);
+                    verticies[x + 1, y, z] = new Vector3((x + 1), heightMap[currentQuad], z);
+                    verticies[x, y, z + 1] = new Vector3(x, heightMap[currentQuad], (z + 1));
+                    verticies[x + 1, y, z + 1] = new Vector3((x + 1), heightMap[currentQuad], (z + 1));
+
+                    verticies[x, y, z] *= data.cellSize;
+                    verticies[x + 1, y, z] *= data.cellSize;
+                    verticies[x, y, z + 1] *= data.cellSize;
+                    verticies[x + 1, y, z + 1] *= data.cellSize;
+
                 }
                 currentQuad++;
             }
@@ -160,7 +161,6 @@ public class Chunk
                 }
             }
         }
-
 
         UpdateMesh();
     }
@@ -218,7 +218,7 @@ public class Chunk
     //
     private void GenerateBuildingGrid(int chunkWidth, int chunkHeight, int chunkLength)
     {
-        buildingGrid = new BuildingGrid(chunkWidth, chunkHeight, chunkLength, data);
+        buildingGrid = new BuildingGrid(chunkWidth, chunkLength, data);
     }
     //
     // Summary:
